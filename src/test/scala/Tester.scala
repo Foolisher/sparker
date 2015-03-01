@@ -1,4 +1,4 @@
-import java.io.StringReader
+import java.io.{FileReader, StringReader}
 
 import au.com.bytecode.opencsv.CSVReader
 import org.supercsv.cellprocessor.ift.CellProcessor
@@ -16,9 +16,9 @@ object Tester {
 
   def main(args: Array[String]) {
 
-    val reader = new CsvMapReader(new StringReader("\"wg\",\"33\""), CsvPreference.STANDARD_PREFERENCE)
+    val reader = new CSVReader(new FileReader("/Users/wanggen/Downloads/part-m-00000"))
 
-    case class Person(name: String, age: Int)
+
 
   }
 }

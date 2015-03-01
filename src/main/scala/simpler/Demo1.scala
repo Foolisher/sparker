@@ -15,7 +15,7 @@ import com.datastax.spark.connector._
  * </pre>
  * @author wanggen on 2015-01-31.
  */
-object CassandraConnectorTest {
+object Demo1 {
 
   def main(args: Array[String]) {
 
