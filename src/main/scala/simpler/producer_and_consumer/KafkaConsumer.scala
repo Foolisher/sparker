@@ -1,50 +1,52 @@
+package simpler.producer_and_consumer
+
 import java.util.Properties
 
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import kafka.consumer.{Consumer, ConsumerConfig}
-import simpler.Person
 
 /**
- * <pre>
- * 功能描述: 
- * </pre>
  * @author wanggen on 2015-03-05.
  */
 object KafkaConsumer {
 
-  val kryo=new Kryo()
+  val kryo = new Kryo()
+  kryo.register(Person.getClass)
 
   def main(args: Array[String]) {
 
-    kryo.register(Person.getClass)
 
     val props = getProperties
     val consumerConfig = new ConsumerConfig(props)
     val consumer = Consumer.create(config = consumerConfig)
 
-    val streams = consumer.createMessageStreams(Map("test"->1))
+    val streams = consumer.createMessageStreams(Map("test" -> 1))
 
-    streams("test")(0).foreach{msg=>
-//      val some = kryo.readObject(new Input(msg.message()), SomeClass.getClass)
-      try {
-        println("Received SomeClass")
-        val input = new Input(msg.message())
-        val some = kryo.readClassAndObject(input).asInstanceOf[Person]
-        println(some)
-        input.close()
+    streams("test")(0).foreach { msg =>
+
+      handleMsg(msg.message(), (p: Person) => {
+        println(p)
+      })
+
+
+      def handleMsg[T](bytes: Array[Byte], function: (T) => Unit): Unit = {
+        val input = new Input(bytes)
+        try {
+          val some = kryo.readClassAndObject(input).asInstanceOf[T]
+          function.apply(some)
+        } catch {
+          case e: Exception => e.printStackTrace()
+        } finally input.close()
       }
-      catch {
-        case e:Exception =>
-          e.printStackTrace()
-      }
+
     }
 
 
   }
 
-  def getProperties:Properties = {
-    val props: Properties = new Properties
+  def getProperties: Properties = {
+    val props = new Properties
     props.put("metadata.broker.list", "10.211.55.9:9092")
     props.put("zookeeper.connect", "10.211.55.9:2181")
     props.put("serializer.class", "kafka.serializer.DefaultEncoder")
