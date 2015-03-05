@@ -4,7 +4,6 @@ import java.io.File
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 import akka.event.slf4j.Logger
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -50,19 +49,22 @@ object Demo3 {
     val stream = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, Map("test" -> 1), StorageLevel.MEMORY_ONLY)
 
-    val result = new mutable.HashMap[String, Long]()
-
 
     stream.map(_._2).foreachRDD { r =>
+      val result = new mutable.HashMap[String, Long]()
       val ret = r.collect().flatMap(line => line.trim.split("\\s+"))
       if (ret.size > 0)
-        Files.append(s"${ret.toList}\n", new File("/usr/dev/workspace/sparker/data/src.txt"), Charset.forName("UTF-8"))
+        Files.append(s"${new SimpleDateFormat("YYYYMMddHHmmss").format(new Date())} ${ret.toList}\n",
+          new File("/usr/dev/workspace/sparker/data/src.txt"), Charset.forName("UTF-8"))
       log.info(s"Received data: ${ret.toList}")
       ret.foreach { v =>
         val count = result.getOrElseUpdate(v, 0) + 1
         result.put(v, count)
         log.info(s"Mapped data: $result, ${result.size}, ${result.isEmpty}")
       }
+      if(result.size > 0)
+        Files.append(s"${new SimpleDateFormat("YYYYMMddHHmmss").format(new Date())} $result\n",
+          new File("/usr/dev/workspace/sparker/data/res.txt"), Charset.forName("UTF-8"))
     }
 
     sys.addShutdownHook{
@@ -75,10 +77,6 @@ object Demo3 {
     }
 
     ssc.start()
-
-    if(result.size > 0)
-      Files.append(s"${new SimpleDateFormat("YYYYMMddHHmmss").format(new Date())} $result\n", new File("/usr/dev/workspace/sparker/data/res.txt"), Charset.forName("UTF-8"))
-
     ssc.awaitTermination()
 
   }

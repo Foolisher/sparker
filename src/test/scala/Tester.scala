@@ -2,10 +2,10 @@
 
 import java.util
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
 
 import scala.collection.mutable
-import scala.util.parsing.json.JSON
 
 /**
  * <pre>
@@ -17,7 +17,7 @@ object Tester {
 
   def main(args: Array[String]) {
 
-//    val mapper = new ObjectMapper()
+    val mapper = new ObjectMapper()
 
     val result = new mutable.HashMap[String, Long]()
 
@@ -33,8 +33,12 @@ object Tester {
     map.put("2", "2")
     println(new Gson().toJson(map))
 
+//    Json.apply(null, mapper).writePretty(result)
 
-//    println(mapper.writeValueAsString(result))
+    println(mapper.writeValueAsString(result))
+
+
+
 
   }
 }
