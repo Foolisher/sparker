@@ -1,10 +1,11 @@
-import java.io.{FileReader, StringReader}
 
-import au.com.bytecode.opencsv.CSVReader
-import org.supercsv.cellprocessor.ift.CellProcessor
-import org.supercsv.io.{CsvBeanReader, CsvMapReader}
-import org.supercsv.prefs.CsvPreference
-import org.supercsv.util.CsvContext
+
+import java.util
+
+import com.google.gson.Gson
+
+import scala.collection.mutable
+import scala.util.parsing.json.JSON
 
 /**
  * <pre>
@@ -16,9 +17,24 @@ object Tester {
 
   def main(args: Array[String]) {
 
-    val reader = new CSVReader(new FileReader("/Users/wanggen/Downloads/part-m-00000"))
+//    val mapper = new ObjectMapper()
+
+    val result = new mutable.HashMap[String, Long]()
+
+    result.put("A", 1)
+    result.put("B", 2)
+
+    println(new Gson().toJson(result))
+    println(new Gson().toJson(mutable.Map(1->2, 2->3)))
+    println(new Gson().toJson(List(1,2,3,4,4)))
+
+    val map = new util.HashMap[String, Object]()
+    map.put("1", "1")
+    map.put("2", "2")
+    println(new Gson().toJson(map))
 
 
+//    println(mapper.writeValueAsString(result))
 
   }
 }

@@ -11,7 +11,6 @@ import org.apache.spark.SparkContext.rddToPairRDDFunctions
 import org.apache.spark.{SparkConf, SparkContext}
 
 
-
 object Demo2 {
 
   def main(args: Array[String]) {
@@ -40,7 +39,7 @@ object Demo2 {
 
     val mapper = new ObjectMapper()
 
-    updater.setString("ordered_"+System.currentTimeMillis(), mapper.writeValueAsString(ordersRDD.collect()))
+    updater.setString("ordered-"+new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()), mapper.writeValueAsString(ordersRDD.collect()))
     template.update(updater)
 
   }
